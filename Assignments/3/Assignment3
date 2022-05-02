@@ -1,0 +1,76 @@
+-- Data Types
+--   1. Fix the Type:
+--      The following declarations got type mistakes, debug them and fix them:
+
+ fixMe1 :: Integer -> Integer -> Bool   -- Operator types must be respected
+ fixMe1 n m 
+  | n >= m    = True
+  | otherwise = False
+
+
+ fixMe2 :: Float -> Float -> String     -- Operator types must be respected
+ fixMe2 n m = if n / m > 10  then "A-F" else "0-9"
+
+
+ --abc :: [Int] this type fix it due to compiler (fresh from 27 session)
+ abc :: [Int]
+ abc = [1..11]
+ 
+ fixMe3 :: [Int] -> Int
+ fixMe3 [] = 0
+ fixMe3 (x:xs) = x + fixMe3 xs
+ 
+ --Try fixMe3 abc in your repl, then fix abc type definition
+
+
+ fixMe4 ::  [Char] -> [Char] -> String            -- Char could be String or [Char]     
+ fixMe4 fName lName = lName ++ ", " ++ fName
+
+
+ scoresT :: Fractional a => [a]
+ scoresT = [74,85,81,98,69.99,78,87,93]
+
+ myDlength :: Fractional a => [a] -> a
+ myDlength [] = 0
+ myDlength (x:xs) = 1 + myDlength (xs)  
+
+-- avg :: Fractional a => [a] -> a
+-- avg scr = sum scr / myDlength scr 
+
+--Assuming that lines 42 to 46 are CORRECT, fix the type.
+ fixMe5 :: (Ord a,Fractional a) => ([a] -> a) -> ([a] -> a) -> [a] -> Char --Parentesis in function types
+ fixMe5 myOper myLen lst 
+  | (myOper lst)/(myLen lst)  > 90.99   = 'A'
+  | (myOper lst)/(myLen lst)  > 80.99   = 'B'
+  | (myOper lst)/(myLen lst)  > 70.99   = 'C'
+  | otherwise                           = 'F'
+
+-- Test it on your repl:
+-- fixMe5 sum myDlength scoresT
+
+
+
+-- Recursion and Polymorphism
+-- 2. Give the following recursive function, define the base case 
+-- beginsWith :: Char -> String -> Bool
+-- beginsWith []       = False             
+-- beginsWith c (x:xs) = c == x    -- this was not recursive 
+
+-- 3. Given a Word and a letter (case sensitive), create function that count the number of times that letter shows up in the word
+ myLtrCount :: String -> Char -> Int
+ myLtrCount [] _ = 0
+ myLtrCount (x:xs) ltr 
+  | x == ltr      = 1 + (myLtrCount xs ltr)  
+  | otherwise     = 0 + (myLtrCount xs ltr)
+
+-- 4. Create a function all' that takes 2 inputs, 
+-- (1st input ) a partial function (with operators: >,>=,<,<=,==) and any value
+-- (2nd input) a list,
+-- and output True if all elements of the functions comply, False if any of the elemnts doesn't, WITHOUT using map 
+
+ all' :: (a -> Bool) -> [a] -> Bool
+ all' p []    = True
+ all' p [x]   = p x
+ all' p (x:xs)
+  | p x       = all' p xs
+  | otherwise = False

@@ -1,0 +1,48 @@
+Haskell 
+
+Unit vs Void
+
+() is a singleton in the type language
+
+Because () is a singleton it doesn't matter at the machinecode/bytecode level that it's not "actually" returned. The compiler can figure it out with no performance hit at all.
+
+The unit datatype () has one non-undefined member, the nullary constructor ().
+
+Void and unit are essentially the same concept. They're used to indicate that a function is called only for its side effects. The difference is that unit actually has a value. That means that unit functions can be used generically wherever a generic first class function is required
+
+https://www.stackage.org/haddock/lts-9.0/base-4.9.1.0/Data-Void.html
+Data.Void
+
+Since Void values logically don't exist, this witnesses the logical reasoning tool of "ex falso quodlibet".. 
+https://en.wikipedia.org/wiki/Principle_of_explosion
+
+https://www.fpcomplete.com/blog/2017/07/to-void-or-to-void/
+
+https://larzac.info/maths/categories/milewski/younotes1/2.2-monomorphisms-simple-types.html
+
+https://semantic.org/post/empty-and-unit-types/
+
+https://james-iry.blogspot.com/2009/07/void-vs-unit.html#:~:text=Void%20and%20unit%20are%20essentially,first%20class%20function%20is%20required.
+
+
+Expressions of type IO a are called actions. For example, IO Char is the type
+of actions that return a character, while IO () is the type of actions that return
+the empty tuple () as a dummy result value. Actions of the latter type can be
+10.3 Basic actions 125
+thought of as purely side-effecting actions that return no result value, and are
+often useful in interactive programming. For example, the countdown program
+in chapter 9 used a top-level definition main of type IO ().
+
+Programming in Haskell page 125 Chapter 10, section 10.2
+NOT A SINGLE INSTANCE OF VOID in Graham Hutton's book
+
+HaskellNotesforProgrammers
+Chapter 26: Functor
+
+Haskell Notes for Programmers Section 41.3
+One and Zero
+The representation of the number 1 is obviously a type with only one constructor. In Haskell, this type is canonically
+the type (), called Unit. Every other type with only one constructor is isomorphic to ().
+And our representation of 0 will be a type without constructors. This is the Void type in Haskell, as defined in
+Data.Void. This would be equivalent to a unhabited type, wihtout data constructors:
+data Void
