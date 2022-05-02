@@ -1,0 +1,3 @@
+ghci
+:l polyform.hs
+exx 1 2 3 4

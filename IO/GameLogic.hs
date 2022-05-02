@@ -1,6 +1,7 @@
 module GameLogic where
  import TicTacToe
- import Debug.Trace
+ import Main
+ import Debug.Trace 
 
  --winner?
  --any of the symbols is in winning state?
@@ -18,41 +19,40 @@ module GameLogic where
  --  type GridState = [[Cell]]
  --  data CellState = EmptyCell | AnX | AnO deriving (Eq,Show)
  --  type Cell = (Int,Int,CellState)
- anyFullRowWinner :: GridState -> Bool
- anyFullRowWinner [] = False
- anyFullRowWinner (x:xs) = check x || anyFullRowWinner xs
-    where
-         check []                 = True
-         check ((row,_,state):ys)  
-          | state /=  EmptyCell   = let z = state == takeNextState ys && check ys
-                                    in trace ("State is " ++ show state ++ " and " ++ show (takeNextState ys)) z
-          | otherwise             = False
-            where
-             takeNextState []            = state
-             takeNextState ((_,_,sta):_) = sta 
 
---testing
+-- winning logic
+--Traverse the DataStructure for EmptyCell
+ fullRowWinner :: GridState -> Bool 
+ fullRowWinner (x:xs) =  check x || fullRowWinner xs
+    where
+      check []                = True
+      check ((row,_,state):ys)
+        | state /= EmptyCell  = state == takeNextState ys && check ys
+        | otherwise           = False
+          where
+            takeNextState []                  = state
+            takeNextState ((_,_,nextstate):_) = nextstate
+
+--Testing
 
  step1 = initialGrid size size
- step2 = setCellState (2,1,AnO) step1
- step3 = setCellState (2,2,AnO) step2
- step4 = setCellState (2,3,AnX) step3
+ step2 = setCellState (2,1,AnX) step1
+ step3 = setCellState (2,1,AnX) step2
+ step4 = setCellState (2,1,AnX) step3
 
-
- test1 = anyFullRowWinner step1
- test2 = anyFullRowWinner step2
- test3 = anyFullRowWinner step3
- test4 = anyFullRowWinner step4
- --any Empty Cell?
- --Traverse the DataStructure for EmptyCell
+ test1 = fullRowWinner step1
+ test2 = fullRowWinner step2
+ test3 = fullRowWinner step3
+ test4 = fullRowWinner step4
+ 
+-- is there an empty cell?
  anyEmptyCell :: Game -> Bool
- anyEmptyCell (Game _ _ _ m) 
-  | m == size^2    = False
-  | otherwise      = True
-   
- --gameOverAction
- --Present Winner or Tie
+ anyEmptyCell (Game _ _ _ moves)
+  | moves == size^2  = False
+  | otherwise        = True
 
+-- GameOver action
+--Present display winner or Tie
 
 --  data Player = PlayerX | PlayerO deriving (Eq,Show)
 --  data State = Running | GameOver deriving Show
