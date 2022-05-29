@@ -1,0 +1,87 @@
+import Control.Monad.Reader
+import Control.Monad.Writer
+import Control.Monad.State
+
+type Value = Float
+type Ident = String
+type Table = [(String, Float)]
+
+data Expr
+  = Lit Value
+  | Var Ident
+  | Dec Ident Value
+  | Add Expr Expr
+  | Mul Expr Expr
+  | Seq [Expr]
+
+a = Seq [
+    Dec "x" 3,
+    Dec "y" 4,
+    Add (Var "x") (Var "z")
+  ]
+
+eval :: Expr -> Table -> Value
+eval (Lit v)    = \t -> v
+eval (Var s)    = \t ->
+  case lookup s t of
+    Nothing -> error "Variable Not Found"
+    Just v  -> v
+eval (Add e f)  = \t -> eval e t + eval f t
+eval (Mul e f)  = \t -> eval e t * eval f t
+
+evalReader :: Expr -> Reader Table Value
+evalReader (Lit v)    = return v
+evalReader (Var s)    = do
+  t <- ask
+  case lookup s t of
+    Nothing -> error "Variable Not Found"
+    Just v  -> return v
+evalReader (Add e f)  = do
+  v <- evalReader e
+  w <- evalReader f
+  return (v + w)
+evalReader (Mul e f)  = do
+  v <- evalReader e
+  w <- evalReader f
+  return (v * w)
+
+evalTable :: Expr -> State Table Value
+evalTable (Lit v)         = return v
+evalTable (Dec s v)       = do
+  t <- get
+  put ((s, v) : t)
+  return (- 7)
+evalTable (Var s)         = do
+  t <- get
+  case lookup s t of
+    Nothing -> error "Variable Not Found"
+    Just v  -> return v
+evalTable (Add e f)       = do
+  v <- evalTable e
+  w <- evalTable f
+  return (v + w)
+evalTable (Mul e f)       = do
+  v <- evalTable e
+  w <- evalTable f
+  return (v * w)
+evalTable (Seq [e])       = evalTable e
+evalTable (Seq (e : es))  = do
+  evalTable e
+  evalTable (Seq es)
+
+-- StateT s IO a:             State + IO
+-- ReaderT e (StateT s IO) a: Reader + (State + IO)
+-- StateT s (ReaderT e IO) a: (State + IO)
+io :: StateT Int IO ()
+io = do
+  v <- get
+  liftIO $ putStrLn $ "the value is " ++ show v
+  i <- liftIO getLine
+  case i of
+    "inc"   -> do
+      put (v + 1)
+      io
+    "dec"   -> do
+      put (v - 1)
+      io
+    "exit"  -> return ()
